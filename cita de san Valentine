@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>San Valentín 💘</title>
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#ff9acb,#ff6fae);
+      font-family:system-ui,Segoe UI,Arial;
+    }
+    .card{
+      background:#fff;
+      padding:30px;
+      border-radius:20px;
+      text-align:center;
+      width:90%;
+      max-width:400px;
+      box-shadow:0 20px 50px rgba(0,0,0,.2);
+    }
+    h1{margin:0 0 10px}
+    p{margin:0 0 20px}
+    button{
+      padding:12px 18px;
+      border:none;
+      border-radius:999px;
+      font-size:16px;
+      cursor:pointer;
+      margin:5px;
+    }
+    #yes{background:#111;color:#fff}
+    #no{background:#eee}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Hey <span id="name">María</span> 💖</h1>
+    <p><span id="from">Gabriel</span> tiene una pregunta…</p>
+    <p><b>¿Quieres ser mi San Valentín?</b></p>
+    <button id="yes">Sí 💘</button>
+    <button id="no">No</button>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    const p=new URLSearchParams(location.search);
+    const name=p.get("name")||"María";
+    const from=p.get("from")||"Gabriel";
+    document.getElementById("name").textContent=name;
+    document.getElementById("from").textContent=from;
+
+    document.getElementById("yes").onclick=()=>{
+      document.getElementById("msg").textContent=
+      `💞 ${name}, ahora somos San Valentín 💞`;
+    };
+    document.getElementById("no").onclick=()=>{
+      document.getElementById("msg").textContent=
+      `😅 Está bien ${name}, igual te quería preguntar`;
+    };
+  </script>
+</body>
+</html>index.html
