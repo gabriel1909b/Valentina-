@@ -1,188 +1,136 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>San Valentín 💘</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Valentín 💘</title>
 
-  <style>
-    :root{
-      --bg1:#ff9a9e;
-      --bg2:#fad0c4;
-      --card:#ffffff;
-      --text:#111;
-      --muted:#555;
-      --btn:#111;
-      --btnText:#fff;
-      --btn2:#eee;
-      --btn2Text:#111;
-      --shadow: 0 18px 45px rgba(0,0,0,.18);
-    }
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  }
 
-    *{ box-sizing:border-box; }
+  .card{
+    background:#fff;
+    padding:30px 25px;
+    border-radius:22px;
+    text-align:center;
+    width:90%;
+    max-width:420px;
+    box-shadow:0 20px 50px rgba(0,0,0,.2);
+  }
 
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      padding: 18px;
-      color: var(--text);
-    }
+  h1{margin:0 0 6px;}
+  p{margin:8px 0;}
 
-    .card{
-      width: min(520px, 100%);
-      background: var(--card);
-      border-radius: 22px;
-      padding: 26px 22px;
-      text-align:center;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
+  .buttons{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:16px;
+    position:relative;
+  }
 
-    h1{
-      margin: 0 0 8px;
-      font-size: 24px;
-      line-height: 1.15;
-    }
+  button{
+    border:none;
+    border-radius:999px;
+    padding:12px 22px;
+    font-size:16px;
+    cursor:pointer;
+    transition:all .25s ease;
+  }
 
-    .sub{
-      margin: 0 0 16px;
-      color: var(--muted);
-      font-size: 15px;
-    }
+  #yes{
+    background:#111;
+    color:#fff;
+  }
 
-    .question{
-      margin: 14px 0 16px;
-      font-size: 18px;
-      font-weight: 700;
-    }
+  #no{
+    background:#eee;
+  }
 
-    .row{
-      display:flex;
-      gap: 10px;
-      justify-content:center;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    button{
-      border: none;
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-size: 16px;
-      cursor: pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      min-width: 140px;
-    }
-
-    #yesBtn{
-      background: var(--btn);
-      color: var(--btnText);
-    }
-
-    #noBtn{
-      background: var(--btn2);
-      color: var(--btn2Text);
-    }
-
-    button:active{ transform: scale(.98); }
-
-    .msg{
-      margin-top: 16px;
-      font-size: 16px;
-      min-height: 24px;
-    }
-
-    .small{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .hidden{ display:none; }
-
-    /* Para evitar “no puedo tocar los botones” por capas raras */
-    .card, .row, button { position: relative; z-index: 2; }
-  </style>
+  #msg{
+    margin-top:14px;
+    font-size:16px;
+    min-height:24px;
+  }
+</style>
 </head>
 
 <body>
-  <main class="card" role="main" aria-label="Invitación San Valentín">
-    <h1>Hey <span id="toName">Sara</span> 💗</h1>
-    <p class="sub"><span id="fromName">Carlos</span> tiene una pregunta…</p>
 
-    <div class="question">¿Quieres ser mi San Valentín?</div>
+<div class="card">
+  <h1>Hey <span id="name">Sara</span> 💖</h1>
+  <p><span id="from">Carlos</span> tiene una pregunta…</p>
+  <p><b>¿Quieres ser mi San Valentín?</b></p>
 
-    <div class="row" id="buttonsRow">
-      <button id="yesBtn" type="button">Sí 💘</button>
-      <button id="noBtn" type="button">No</button>
-    </div>
+  <div class="buttons">
+    <button id="yes">Sí 💘</button>
+    <button id="no">No</button>
+  </div>
 
-    <div class="msg" id="msg" aria-live="polite"></div>
-    <div class="small" id="smallHint">Toca una opción ✨</div>
+  <div id="msg"></div>
+</div>
 
-    <div class="row hidden" id="restartRow" style="margin-top:14px;">
-      <button id="restartBtn" type="button">Volver a intentar</button>
-    </div>
-  </main>
+<script>
+  // nombres por URL
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById("name").textContent = params.get("to") || "Sara";
+  document.getElementById("from").textContent = params.get("from") || "Carlos";
 
-  <script>
-    // ====== Cambiar nombres por URL ======
-    // Ejemplo: https://tusitio.github.io/tu-repo/?to=María&from=Gabriel
-    const params = new URLSearchParams(location.search);
-    const to = params.get("to") || "Sara";
-    const from = params.get("from") || "Carlos";
+  const yesBtn = document.getElementById("yes");
+  const noBtn = document.getElementById("no");
+  const msg = document.getElementById("msg");
 
-    document.getElementById("toName").textContent = to;
-    document.getElementById("fromName").textContent = from;
+  let scale = 1;
+  let count = 0;
 
-    // ====== Lógica de botones ======
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const msg = document.getElementById("msg");
-    const hint = document.getElementById("smallHint");
-    const buttonsRow = document.getElementById("buttonsRow");
-    const restartRow = document.getElementById("restartRow");
-    const restartBtn = document.getElementById("restartBtn");
+  const frases = [
+    "¿Segura? 😳",
+    "¿Segurita? 🥺",
+    "Piénsalo bien 😏",
+    "Me estás rompiendo el corazón 💔",
+    "Última oportunidad 😤"
+  ];
 
-    function finish(text){
-      msg.textContent = text;
-      hint.classList.add("hidden");
-      // Desactiva botones para que no siga tocando
-      yesBtn.disabled = true;
-      noBtn.disabled = true;
-      yesBtn.style.opacity = "0.7";
-      noBtn.style.opacity = "0.7";
-      restartRow.classList.remove("hidden");
-    }
+  noBtn.addEventListener("click", () => {
+    msg.textContent = frases[count % frases.length];
+    count++;
 
-    yesBtn.addEventListener("click", () => {
-      finish("¡Sii! 💖 Qué emoción. Feliz San Valentín 🥰");
-    });
+    scale += 0.25;
+    yesBtn.style.transform = `scale(${scale})`;
+  });
 
-    noBtn.addEventListener("click", () => {
-      // Respuesta respetuosa, sin insistir ni presionar
-      finish("No pasa nada 😊 Gracias por ser sincera. ¡Que tengas un día bonito! 🌷");
-    });
+  yesBtn.addEventListener("click", () => {
+    document.body.innerHTML = `
+      <div style="
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+        font-family: system-ui;
+      ">
+        <div style="
+          background:#fff;
+          padding:40px;
+          border-radius:24px;
+          text-align:center;
+          box-shadow:0 20px 50px rgba(0,0,0,.2);
+        ">
+          <h1>💘 Sabía que dirías que sí 💘</h1>
+          <p>Feliz San Valentín 😍</p>
+        </div>
+      </div>
+    `;
+  });
+</script>
 
-    restartBtn.addEventListener("click", () => {
-      msg.textContent = "";
-      hint.classList.remove("hidden");
-      yesBtn.disabled = false;
-      noBtn.disabled = false;
-      yesBtn.style.opacity = "1";
-      noBtn.style.opacity = "1";
-      restartRow.classList.add("hidden");
-    });
-
-    // ====== Extra: evitar zoom raro al tocar en iPhone (no siempre pasa) ======
-    document.addEventListener("gesturestart", (e) => e.preventDefault());
-  </script>
 </body>
 </html>
