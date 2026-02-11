@@ -47,20 +47,42 @@
   </div>
 
   <script>
-    const p=new URLSearchParams(location.search);
-    const name=p.get("name")||"María";
-    const from=p.get("from")||"Gabriel";
-    document.getElementById("name").textContent=name;
-    document.getElementById("from").textContent=from;
+<script>
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const message = document.getElementById("message");
 
-    document.getElementById("yes").onclick=()=>{
-      document.getElementById("msg").textContent=
-      `💞 ${name}, ahora somos San Valentín 💞`;
-    };
-    document.getElementById("no").onclick=()=>{
-      document.getElementById("msg").textContent=
-      `😅 Está bien ${name}, igual te quería preguntar`;
-    };
+  let count = 0;
+
+  const frases = [
+    "¿Segura? 🙄",
+    "Piénsalo bien 😒",
+    "No seas así 😭",
+    "Ya me estás hiriendo 💔",
+    "Última oportunidad 😤"
+  ];
+
+  noBtn.addEventListener("click", () => {
+    count++;
+
+    message.textContent = frases[Math.min(count - 1, frases.length - 1)];
+
+    // Hace el botón Sí más grande
+    yesBtn.style.transform = `scale(${1 + count * 0.2})`;
+
+    // Mueve el botón No
+    noBtn.style.position = "absolute";
+    noBtn.style.top = Math.random() * 80 + "%";
+    noBtn.style.left = Math.random() * 80 + "%";
+  });
+
+  yesBtn.addEventListener("click", () => {
+    document.body.innerHTML = `
+      <h1>💖 Sabía que dirías que sí 💖</h1>
+      <p>Feliz San Valentín 😍</p>
+    `;
+  });
+</script>
   </script>
 </body>
 </html>index.html
