@@ -2,87 +2,187 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>San Valentín 💘</title>
+
   <style>
+    :root{
+      --bg1:#ff9a9e;
+      --bg2:#fad0c4;
+      --card:#ffffff;
+      --text:#111;
+      --muted:#555;
+      --btn:#111;
+      --btnText:#fff;
+      --btn2:#eee;
+      --btn2Text:#111;
+      --shadow: 0 18px 45px rgba(0,0,0,.18);
+    }
+
+    *{ box-sizing:border-box; }
+
     body{
       margin:0;
       min-height:100vh;
       display:grid;
       place-items:center;
-      background:linear-gradient(135deg,#ff9acb,#ff6fae);
-      font-family:system-ui,Segoe UI,Arial;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      padding: 18px;
+      color: var(--text);
     }
+
     .card{
-      background:#fff;
-      padding:30px;
-      border-radius:20px;
+      width: min(520px, 100%);
+      background: var(--card);
+      border-radius: 22px;
+      padding: 26px 22px;
       text-align:center;
-      width:90%;
-      max-width:400px;
-      box-shadow:0 20px 50px rgba(0,0,0,.2);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
     }
-    h1{margin:0 0 10px}
-    p{margin:0 0 20px}
+
+    h1{
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.15;
+    }
+
+    .sub{
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .question{
+      margin: 14px 0 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
     button{
-      padding:12px 18px;
-      border:none;
-      border-radius:999px;
-      font-size:16px;
-      cursor:pointer;
-      margin:5px;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      min-width: 140px;
     }
-    #yes{background:#111;color:#fff}
-    #no{background:#eee}
+
+    #yesBtn{
+      background: var(--btn);
+      color: var(--btnText);
+    }
+
+    #noBtn{
+      background: var(--btn2);
+      color: var(--btn2Text);
+    }
+
+    button:active{ transform: scale(.98); }
+
+    .msg{
+      margin-top: 16px;
+      font-size: 16px;
+      min-height: 24px;
+    }
+
+    .small{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hidden{ display:none; }
+
+    /* Para evitar “no puedo tocar los botones” por capas raras */
+    .card, .row, button { position: relative; z-index: 2; }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Hey <span id="name">María</span> 💖</h1>
-    <p><span id="from">Gabriel</span> tiene una pregunta…</p>
-    <p><b>¿Quieres ser mi San Valentín?</b></p>
-    <button id="yes">Sí 💘</button>
-    <button id="no">No</button>
-    <p id="msg"></p>
-  </div>
+  <main class="card" role="main" aria-label="Invitación San Valentín">
+    <h1>Hey <span id="toName">Sara</span> 💗</h1>
+    <p class="sub"><span id="fromName">Carlos</span> tiene una pregunta…</p>
+
+    <div class="question">¿Quieres ser mi San Valentín?</div>
+
+    <div class="row" id="buttonsRow">
+      <button id="yesBtn" type="button">Sí 💘</button>
+      <button id="noBtn" type="button">No</button>
+    </div>
+
+    <div class="msg" id="msg" aria-live="polite"></div>
+    <div class="small" id="smallHint">Toca una opción ✨</div>
+
+    <div class="row hidden" id="restartRow" style="margin-top:14px;">
+      <button id="restartBtn" type="button">Volver a intentar</button>
+    </div>
+  </main>
 
   <script>
-<script>
-  const noBtn = document.getElementById("no");
-  const yesBtn = document.getElementById("yes");
-  const message = document.getElementById("message");
+    // ====== Cambiar nombres por URL ======
+    // Ejemplo: https://tusitio.github.io/tu-repo/?to=María&from=Gabriel
+    const params = new URLSearchParams(location.search);
+    const to = params.get("to") || "Sara";
+    const from = params.get("from") || "Carlos";
 
-  let count = 0;
+    document.getElementById("toName").textContent = to;
+    document.getElementById("fromName").textContent = from;
 
-  const frases = [
-    "¿Segura? 🙄",
-    "Piénsalo bien 😒",
-    "No seas así 😭",
-    "Ya me estás hiriendo 💔",
-    "Última oportunidad 😤"
-  ];
+    // ====== Lógica de botones ======
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const msg = document.getElementById("msg");
+    const hint = document.getElementById("smallHint");
+    const buttonsRow = document.getElementById("buttonsRow");
+    const restartRow = document.getElementById("restartRow");
+    const restartBtn = document.getElementById("restartBtn");
 
-  noBtn.addEventListener("click", () => {
-    count++;
+    function finish(text){
+      msg.textContent = text;
+      hint.classList.add("hidden");
+      // Desactiva botones para que no siga tocando
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      yesBtn.style.opacity = "0.7";
+      noBtn.style.opacity = "0.7";
+      restartRow.classList.remove("hidden");
+    }
 
-    message.textContent = frases[Math.min(count - 1, frases.length - 1)];
+    yesBtn.addEventListener("click", () => {
+      finish("¡Sii! 💖 Qué emoción. Feliz San Valentín 🥰");
+    });
 
-    // Hace el botón Sí más grande
-    yesBtn.style.transform = `scale(${1 + count * 0.2})`;
+    noBtn.addEventListener("click", () => {
+      // Respuesta respetuosa, sin insistir ni presionar
+      finish("No pasa nada 😊 Gracias por ser sincera. ¡Que tengas un día bonito! 🌷");
+    });
 
-    // Mueve el botón No
-    noBtn.style.position = "absolute";
-    noBtn.style.top = Math.random() * 80 + "%";
-    noBtn.style.left = Math.random() * 80 + "%";
-  });
+    restartBtn.addEventListener("click", () => {
+      msg.textContent = "";
+      hint.classList.remove("hidden");
+      yesBtn.disabled = false;
+      noBtn.disabled = false;
+      yesBtn.style.opacity = "1";
+      noBtn.style.opacity = "1";
+      restartRow.classList.add("hidden");
+    });
 
-  yesBtn.addEventListener("click", () => {
-    document.body.innerHTML = `
-      <h1>💖 Sabía que dirías que sí 💖</h1>
-      <p>Feliz San Valentín 😍</p>
-    `;
-  });
-</script>
+    // ====== Extra: evitar zoom raro al tocar en iPhone (no siempre pasa) ======
+    document.addEventListener("gesturestart", (e) => e.preventDefault());
   </script>
 </body>
-</html>index.html
+</html>
